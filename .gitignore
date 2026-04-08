@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# aidd
+.aidd/
+.claude/
+aidd_docs/templates/
+aidd_docs/contributing.md
+aidd_docs/catalog.md
+aidd_docs/readme.md
+.vscode/
+.mcp.json
