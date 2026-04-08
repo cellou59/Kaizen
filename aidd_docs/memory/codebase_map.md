@@ -16,38 +16,28 @@ flowchart TD
     RunPage["Active Run Page (tree map)"]
     RootLayout["Root Layout"]
 
-    RunDomain["Run Domain (map gen, navigation)"]
+    MapGen["Map Generation (generate-paths, build-nodes, assign-types, validate, orchestrator)"]
+    RunStore["Run Store (Zustand + localStorage)"]
+    UseRun["useRun Hook"]
+    TreeMapUI["Tree Map Components (TreeMapView, MapNode, StepEdges, MapLegend)"]
+    MapSchemas["Zod Schemas (map.ts)"]
+
     ExerciseDomain["Exercise Domain (library, validation)"]
     BuffDomain["Buff/Debuff Domain"]
     StreakDomain["Streak Domain"]
     UserDomain["User Domain (auth, profile)"]
 
-    SharedComponents["Shared UI Components"]
-    SharedLib["Shared Utilities"]
-    SharedTypes["Shared Types"]
+    SharedLib["Shared Utilities (storage.ts)"]
+    SharedTypes["Shared Types (MapNode, MapEdge, TreeMap, RunState)"]
 
-    SupabaseLayer["Supabase (config, migrations, seed)"]
+    DashboardPage --> UseRun
+    RunPage --> UseRun
+    RunPage --> TreeMapUI
 
-    AuthPages --> UserDomain
-    DashboardPage --> StreakDomain
-    DashboardPage --> RunDomain
-    RunPage --> RunDomain
-    RunPage --> ExerciseDomain
-    RunPage --> BuffDomain
-    RootLayout --> SharedComponents
-
-    RunDomain --> SharedLib
-    ExerciseDomain --> SharedLib
-    BuffDomain --> SharedLib
-    StreakDomain --> SharedLib
-    UserDomain --> SharedLib
-
-    RunDomain --> SharedTypes
-    ExerciseDomain --> SharedTypes
-    BuffDomain --> SharedTypes
-    StreakDomain --> SharedTypes
-    UserDomain --> SharedTypes
-
-    SharedLib --> SupabaseLayer
-    SharedComponents --> SharedTypes
+    UseRun --> RunStore
+    RunStore --> MapGen
+    RunStore --> SharedLib
+    MapGen --> SharedTypes
+    MapSchemas --> SharedTypes
+    TreeMapUI --> SharedTypes
 ```
