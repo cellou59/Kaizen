@@ -1,9 +1,9 @@
 export type {
-  NodeType,
-  NodeStatus,
-  RunStatus,
-  MapNode,
   MapEdge,
-  TreeMap,
+  MapNode,
+  NodeStatus,
+  NodeType,
   RunState,
+  RunStatus,
+  TreeMap,
 } from "@/types";

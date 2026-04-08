@@ -34,4 +34,23 @@ export interface RunState {
   status: RunStatus;
   startedAt: string;
   completedAt: string | null;
+  exerciseMap: Record<string, ExerciseAssignment>;
+  feedbackScores: Record<string, FeedbackScore>;
+}
+
+export interface Exercise {
+  id: string;
+  name: string;
+  description: string;
+  baseReps: number | null;
+  baseDuration: number | null;
+  difficultyMultiplier: number;
+}
+
+export type FeedbackScore = 0 | 1 | 2 | 3 | 4 | 5;
+
+export interface ExerciseAssignment {
+  exercise: Exercise;
+  adjustedReps: number | null;
+  adjustedDuration: number | null;
 }

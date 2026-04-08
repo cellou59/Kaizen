@@ -18,6 +18,7 @@ export function StepEdges({ edges, sourceRow }: StepEdgesProps) {
 
   return (
     <svg viewBox="0 0 300 60" width={300} height={60} className="mx-auto">
+      <title>Step edges</title>
       {rowEdges.map((edge) => {
         const sourceX = COL_X[edge.sourceCol] ?? 150;
         const targetX = COL_X[edge.targetCol] ?? 150;

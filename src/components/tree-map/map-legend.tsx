@@ -1,6 +1,6 @@
 "use client";
 
-import { GiSwordClash, GiScrollQuill, GiCampfire, GiDragonHead } from "react-icons/gi";
+import { GiCampfire, GiDragonHead, GiScrollQuill, GiSwordClash } from "react-icons/gi";
 
 const LEGEND_ENTRIES = [
   { icon: GiSwordClash, label: "Challenge" },

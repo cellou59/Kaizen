@@ -1,4 +1,4 @@
-import type { MapNode, MapEdge } from "./types";
+import type { MapEdge, MapNode } from "./types";
 
 export function buildNodes(paths: number[][]): {
   nodes: MapNode[];

@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useRunStore } from "@/store/run-store";
+import type { ExerciseAssignment } from "@/types";
 
 export function useRun() {
   const currentRun = useRunStore((s) => s.currentRun);
@@ -11,6 +12,8 @@ export function useRun() {
   const completeRun = useRunStore((s) => s.completeRun);
   const clearRun = useRunStore((s) => s.clearRun);
   const hydrate = useRunStore((s) => s.hydrate);
+  const completeExercise = useRunStore((s) => s.completeExercise);
+  const abandonRun = useRunStore((s) => s.abandonRun);
 
   useEffect(() => {
     hydrate();
@@ -26,8 +29,20 @@ export function useRun() {
     : [];
 
   const activeNode = currentRun
-    ? currentRun.map.nodes.find((n) => n.status === "active") ?? null
+    ? (currentRun.map.nodes.find((n) => n.status === "active") ?? null)
     : null;
+
+  const currentExercise =
+    activeNode && currentRun?.exerciseMap?.[activeNode.id]
+      ? currentRun.exerciseMap[activeNode.id]
+      : null;
+
+  const exerciseForNode = useCallback(
+    (nodeId: string): ExerciseAssignment | null => {
+      return currentRun?.exerciseMap?.[nodeId] ?? null;
+    },
+    [currentRun],
+  );
 
   return {
     currentRun,
@@ -44,5 +59,9 @@ export function useRun() {
     failRun,
     completeRun,
     clearRun,
+    completeExercise,
+    abandonRun,
+    currentExercise,
+    exerciseForNode,
   };
 }

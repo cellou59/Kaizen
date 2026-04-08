@@ -1,9 +1,13 @@
 import { create } from "zustand";
-import type { RunState, MapNode } from "@/types";
+import { adjustDifficulty, computeAssignment } from "@/lib/exercises/difficulty";
+import { selectExercises } from "@/lib/exercises/select-exercises";
 import { generateMap } from "@/lib/map-gen/generate-map";
+import { FeedbackScoreSchema } from "@/lib/schemas/exercise";
 import { storage } from "@/lib/storage";
+import type { ExerciseAssignment, FeedbackScore, MapNode, RunState } from "@/types";
 
 const STORAGE_KEY = "kai7en-run";
+const DIFFICULTY_KEY = "kai7en-difficulty";
 
 type RunStore = {
   currentRun: RunState | null;
@@ -15,6 +19,8 @@ type RunStore = {
   completeRun: () => void;
   clearRun: () => void;
   hydrate: () => void;
+  completeExercise: (nodeId: string, score: FeedbackScore) => void;
+  abandonRun: () => void;
 };
 
 function findAvailableNodes(
@@ -27,9 +33,7 @@ function findAvailableNodes(
     .filter((e) => e.sourceRow === fromRow && e.sourceCol === fromCol)
     .map((e) => ({ row: e.targetRow, col: e.targetCol }));
 
-  return nodes.filter((n) =>
-    targetCoords.some((t) => t.row === n.row && t.col === n.col),
-  );
+  return nodes.filter((n) => targetCoords.some((t) => t.row === n.row && t.col === n.col));
 }
 
 export const useRunStore = create<RunStore>()((set, get) => ({
@@ -53,6 +57,15 @@ export const useRunStore = create<RunStore>()((set, get) => ({
       return node;
     });
 
+    const exerciseNodes = updatedNodes.filter((n) => n.type === "challenge" || n.type === "boss");
+    const exercises = selectExercises(exerciseNodes.length);
+    const multiplier = storage.get<number>(DIFFICULTY_KEY) ?? 1.0;
+
+    const exerciseMap: Record<string, ExerciseAssignment> = {};
+    for (let i = 0; i < exerciseNodes.length; i++) {
+      exerciseMap[exerciseNodes[i].id] = computeAssignment(exercises[i], multiplier);
+    }
+
     const run: RunState = {
       id: crypto.randomUUID(),
       map: { ...map, nodes: updatedNodes },
@@ -61,6 +74,8 @@ export const useRunStore = create<RunStore>()((set, get) => ({
       status: "active",
       startedAt: new Date().toISOString(),
       completedAt: null,
+      exerciseMap,
+      feedbackScores: {},
     };
 
     storage.set(STORAGE_KEY, run);
@@ -71,9 +86,7 @@ export const useRunStore = create<RunStore>()((set, get) => ({
     const { currentRun } = get();
     if (!currentRun || currentRun.status !== "active") return;
 
-    const targetNode = currentRun.map.nodes.find(
-      (n) => n.row === row && n.col === col,
-    );
+    const targetNode = currentRun.map.nodes.find((n) => n.row === row && n.col === col);
     if (!targetNode || targetNode.status !== "available") return;
 
     const updatedNodes = currentRun.map.nodes.map((node) => {
@@ -207,6 +220,36 @@ export const useRunStore = create<RunStore>()((set, get) => ({
   clearRun: () => {
     storage.remove(STORAGE_KEY);
     set({ currentRun: null });
+  },
+
+  completeExercise: (nodeId: string, score: FeedbackScore) => {
+    const { currentRun } = get();
+    if (!currentRun || currentRun.status !== "active") return;
+
+    FeedbackScoreSchema.parse(score);
+
+    const updatedFeedbackScores = {
+      ...currentRun.feedbackScores,
+      [nodeId]: score,
+    };
+
+    const currentMultiplier = storage.get<number>(DIFFICULTY_KEY) ?? 1.0;
+    const newMultiplier = adjustDifficulty(currentMultiplier, score);
+    storage.set(DIFFICULTY_KEY, newMultiplier);
+
+    const updatedRun: RunState = {
+      ...currentRun,
+      feedbackScores: updatedFeedbackScores,
+    };
+
+    storage.set(STORAGE_KEY, updatedRun);
+    set({ currentRun: updatedRun });
+
+    get().completeNode();
+  },
+
+  abandonRun: () => {
+    get().failRun();
   },
 
   hydrate: () => {

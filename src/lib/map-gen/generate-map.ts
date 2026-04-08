@@ -1,7 +1,7 @@
-import type { TreeMap } from "./types";
-import { generatePaths } from "./generate-paths";
-import { buildNodes } from "./build-nodes";
 import { assignTypes } from "./assign-types";
+import { buildNodes } from "./build-nodes";
+import { generatePaths } from "./generate-paths";
+import type { TreeMap } from "./types";
 import { validateMap } from "./validate-map";
 
 const MAX_RETRIES = 10;

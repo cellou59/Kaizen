@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useRun } from "@/hooks/use-run";
 
 export default function RunResultPage() {
   const router = useRouter();
-  const { currentRun, hydrated, runStatus, clearRun } = useRun();
+  const { currentRun, hydrated, runStatus, clearRun, startRun } = useRun();
 
   useEffect(() => {
     if (!hydrated) return;
@@ -18,6 +18,12 @@ export default function RunResultPage() {
   const handleBackToDashboard = () => {
     clearRun();
     router.push("/dashboard");
+  };
+
+  const handleRestart = () => {
+    clearRun();
+    startRun();
+    router.push("/run");
   };
 
   if (!hydrated || !currentRun) {
@@ -40,6 +46,13 @@ export default function RunResultPage() {
             <p className="text-stone font-body">
               Your journey has come to an end. Better luck next time.
             </p>
+            <button
+              type="button"
+              className="bg-sage text-parchment px-6 py-2 rounded-xl font-heading"
+              onClick={handleRestart}
+            >
+              Relancer
+            </button>
           </>
         )}
         <button

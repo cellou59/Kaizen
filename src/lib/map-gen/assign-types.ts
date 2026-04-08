@@ -1,4 +1,4 @@
-import type { MapNode, MapEdge, NodeType } from "./types";
+import type { MapEdge, MapNode, NodeType } from "./types";
 
 const MIDDLE_TYPES: NodeType[] = ["challenge", "event", "rest"];
 
@@ -10,10 +10,7 @@ function getOutgoingEdges(row: number, col: number, edges: MapEdge[]): MapEdge[]
   return edges.filter((e) => e.sourceRow === row && e.sourceCol === col);
 }
 
-function hasConsecutiveRest(
-  nodes: Map<string, NodeType>,
-  paths: number[][],
-): boolean {
+function hasConsecutiveRest(nodes: Map<string, NodeType>, paths: number[][]): boolean {
   for (const path of paths) {
     for (let row = 0; row < path.length - 1; row++) {
       const currentType = nodes.get(`node-${row}-${path[row]}`);
@@ -32,9 +29,7 @@ function forkChildrenHaveDifferentTypes(
   for (const node of allNodes) {
     const outgoing = getOutgoingEdges(node.row, node.col, edges);
     if (outgoing.length > 1) {
-      const childTypes = outgoing.map((e) =>
-        nodes.get(`node-${e.targetRow}-${e.targetCol}`),
-      );
+      const childTypes = outgoing.map((e) => nodes.get(`node-${e.targetRow}-${e.targetCol}`));
       const uniqueTypes = new Set(childTypes);
       if (uniqueTypes.size < childTypes.length) return false;
     }
@@ -42,10 +37,7 @@ function forkChildrenHaveDifferentTypes(
   return true;
 }
 
-function checkPathDistribution(
-  nodes: Map<string, NodeType>,
-  paths: number[][],
-): boolean {
+function checkPathDistribution(nodes: Map<string, NodeType>, paths: number[][]): boolean {
   for (const path of paths) {
     let challenges = 0;
     let events = 0;
@@ -79,28 +71,21 @@ function tryAssign(
     }
   }
 
-  const middleNodes = originalNodes.filter(
-    (n) => n.row >= 2 && n.row <= 5,
-  );
+  const middleNodes = originalNodes.filter((n) => n.row >= 2 && n.row <= 5);
 
   for (const node of middleNodes) {
     typeMap.set(node.id, pickRandom(MIDDLE_TYPES));
   }
 
   if (hasConsecutiveRest(typeMap, paths)) return null;
-  if (!forkChildrenHaveDifferentTypes(typeMap, edges, originalNodes))
-    return null;
+  if (!forkChildrenHaveDifferentTypes(typeMap, edges, originalNodes)) return null;
 
   if (strict && !checkPathDistribution(typeMap, paths)) return null;
 
   return typeMap;
 }
 
-export function assignTypes(
-  nodes: MapNode[],
-  edges: MapEdge[],
-  paths: number[][],
-): MapNode[] {
+export function assignTypes(nodes: MapNode[], edges: MapEdge[], paths: number[][]): MapNode[] {
   for (let attempt = 0; attempt < 100; attempt++) {
     const strict = attempt < 100;
     const result = tryAssign(nodes, edges, paths, strict);

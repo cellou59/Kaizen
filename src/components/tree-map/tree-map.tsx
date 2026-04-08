@@ -18,11 +18,7 @@ const COL_STYLE: Record<number, string> = {
   2: "left-[75%] -translate-x-1/2",
 };
 
-export function TreeMapView({
-  map,
-  onSelectNode,
-  onCompleteNode,
-}: TreeMapProps) {
+export function TreeMapView({ map, onSelectNode, onCompleteNode }: TreeMapProps) {
   const nodesByRow = (row: number) =>
     map.nodes.filter((n) => n.row === row).sort((a, b) => a.col - b.col);
 
@@ -35,10 +31,7 @@ export function TreeMapView({
           <div key={row}>
             <div className="relative h-14">
               {rowNodes.map((node) => (
-                <div
-                  key={node.id}
-                  className={`absolute top-0 ${COL_STYLE[node.col] ?? ""}`}
-                >
+                <div key={node.id} className={`absolute top-0 ${COL_STYLE[node.col] ?? ""}`}>
                   <MapNodeComponent
                     node={node}
                     onSelect={onSelectNode}

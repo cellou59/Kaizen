@@ -1,6 +1,6 @@
 "use client";
 
-import { GiSwordClash, GiScrollQuill, GiCampfire, GiDragonHead } from "react-icons/gi";
+import { GiCampfire, GiDragonHead, GiScrollQuill, GiSwordClash } from "react-icons/gi";
 import type { MapNode, NodeStatus, NodeType } from "@/types";
 
 const NODE_ICONS: Record<NodeType, React.ComponentType<{ className?: string }>> = {
@@ -19,12 +19,7 @@ const STATUS_CLASSES: Record<NodeStatus, string> = {
   failed: "bg-error-container text-error",
 };
 
-const DISABLED_STATUSES: Set<NodeStatus> = new Set([
-  "pending",
-  "completed",
-  "skipped",
-  "failed",
-]);
+const DISABLED_STATUSES: Set<NodeStatus> = new Set(["pending", "completed", "skipped", "failed"]);
 
 type MapNodeProps = {
   node: MapNode;

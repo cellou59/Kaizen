@@ -1,7 +1,14 @@
 import { z } from "zod";
 
 const NodeTypeSchema = z.enum(["challenge", "event", "rest", "boss"]);
-const NodeStatusSchema = z.enum(["active", "available", "pending", "completed", "skipped", "failed"]);
+const NodeStatusSchema = z.enum([
+  "active",
+  "available",
+  "pending",
+  "completed",
+  "skipped",
+  "failed",
+]);
 const RunStatusSchema = z.enum(["active", "completed", "failed"]);
 
 export const MapNodeSchema = z.object({
